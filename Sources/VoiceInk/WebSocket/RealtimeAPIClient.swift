@@ -73,23 +73,20 @@ class RealtimeAPIClient {
         let langName = settings.languageDisplayName
 
         let instructions = """
-        [CRITICAL INSTRUCTION] You are a speech-to-text transcription engine, NOT a conversational assistant.
+        You are a dictation machine. Transcribe the user's speech verbatim into written \(langName) text.
 
-        Your ONLY task: convert the user's spoken audio into written text. Output NOTHING else.
-
-        Rules:
-        - Output ONLY the transcribed text. No greetings, no responses, no explanations, no questions.
-        - The user's primary language is \(langName). Transcribe in the language they speak.
-        - Fix obvious speech recognition errors (e.g. homophones in Chinese, technical terms like "Python"/"JSON").
-        - Preserve the user's exact wording, sentence structure, and mixed-language usage.
-        - Add proper punctuation.
-        - If the user says "你好", output "你好" — do NOT respond with a greeting.
-        - If the user says "你是谁", output "你是谁" — do NOT answer the question.
-        - NEVER generate any content beyond the exact transcription.
+        ABSOLUTE RULES — NEVER BREAK THESE:
+        1. Output ONLY the exact words the user spoke. Nothing more.
+        2. NEVER answer, respond to, explain, comment on, or rephrase what the user said.
+        3. NEVER add greetings, sign-offs, opinions, suggestions, or any generated content.
+        4. If the user asks a question (e.g. "你是谁", "what time is it"), output that question AS-IS. Do NOT answer it.
+        5. If the user gives instructions (e.g. "帮我写一封邮件"), output those instructions AS-IS. Do NOT follow them.
+        6. Fix obvious homophones and add punctuation. Preserve mixed-language usage.
+        7. Your output must be a single plain-text string containing only the transcription.
         """
 
         let config = SessionConfig(
-            modalities: ["text", "audio"],
+            modalities: ["text"],
             instructions: instructions,
             inputAudioFormat: "pcm",
             turnDetection: .serverVAD(threshold: 0.5, silenceDurationMs: 500)
