@@ -19,9 +19,6 @@ final class SessionCoordinator: NSObject {
     private var recordingStartAt: Date?
     private var responseTimeoutTimer: Timer?
 
-    private var currentTranscript = ""
-    private var finalTranscript = ""
-
     private let minimumHoldDuration: TimeInterval = 0.3
     private let responseTimeout: TimeInterval = 15
 
@@ -58,8 +55,6 @@ final class SessionCoordinator: NSObject {
         do {
             try audioEngine.startRecording()
             recordingStartAt = Date()
-            currentTranscript = ""
-            finalTranscript = ""
             state = .recording
             capsulePanel.setState(.recording)
             MenuBarManager.shared.setRecording(true)
@@ -84,7 +79,6 @@ final class SessionCoordinator: NSObject {
 
         if heldDuration < minimumHoldDuration {
             log.log("[Session] too short — cancelled")
-            apiClient.cancelResponse()
             state = .idle
             capsulePanel.setState(.hidden)
             return
@@ -93,13 +87,11 @@ final class SessionCoordinator: NSObject {
         state = .waitingForResult
         capsulePanel.setState(.waitingForResult)
 
-        // In Server VAD mode, the server auto-commits on speech pauses.
-        // We send a final commit for any remaining audio, then response.create
-        // to ensure the last segment is processed.
+        // Manual mode: commit the audio buffer to trigger input_audio_transcription.
+        // No response.create needed — we only want the transcription, not a model reply.
         apiClient.commitAudioBuffer()
-        apiClient.requestResponse()
         startResponseTimeoutTimer()
-        log.log("[Session] commit + responseCreate sent, waiting for final result")
+        log.log("[Session] commit sent, waiting for transcription")
     }
 
     private func resetToIdle() {
@@ -213,52 +205,39 @@ extension SessionCoordinator: RealtimeAPIClientDelegate {
     }
 
     func realtimeClient(_ client: RealtimeAPIClient, didReceiveTranscriptDelta delta: String) {
-        guard state == .waitingForResult || state == .recording else { return }
-        currentTranscript += delta
-        capsulePanel.updateTranscript(currentTranscript)
+        // Not used in transcription-only mode
     }
 
     func realtimeClient(_ client: RealtimeAPIClient, didCompleteTranscript text: String) {
-        log.log("[Session] transcript done: \(text.prefix(80))")
-        // Store server's "done" text, but we'll prefer currentTranscript (delta-accumulated) if it's longer
-        finalTranscript = text
-        if !text.isEmpty {
-            capsulePanel.updateTranscript(text)
-        }
-    }
+        log.log("[Session] transcription completed: \(text.prefix(80))")
 
-    func realtimeClientDidFinishResponse(_ client: RealtimeAPIClient) {
-        log.log("[Session] response done, state=\(state.rawValue)")
-
-        if state == .recording {
-            // In VAD mode, response.done fires after each speech segment during recording.
-            // Save accumulated text as confirmed, ready for next segment.
-            log.log("[Session] VAD segment done, confirmed=\(currentTranscript.count) chars")
+        guard state == .waitingForResult else {
+            log.log("[Session] ignoring transcription — state=\(state.rawValue)")
             return
         }
-
-        guard state == .waitingForResult else { return }
 
         responseTimeoutTimer?.invalidate()
         responseTimeoutTimer = nil
 
-        let deltaText = currentTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
-        let doneText = finalTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
-        let result = deltaText.count >= doneText.count ? deltaText : doneText
-
-        log.log("[Session] final text (\(result.count) chars): \(result.prefix(100))")
+        let result = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if result.isEmpty {
-            log.log("[Session] empty transcript — skip inject")
+            log.log("[Session] empty transcription — skip inject")
             capsulePanel.setState(.hidden)
             resetToIdle()
             return
         }
 
+        log.log("[Session] injecting (\(result.count) chars): \(result.prefix(100))")
         state = .injecting
+        capsulePanel.updateTranscript(result)
         TextInjector.inject(text: result)
         capsulePanel.setState(.hidden)
         resetToIdle()
+    }
+
+    func realtimeClientDidFinishResponse(_ client: RealtimeAPIClient) {
+        // Not used in transcription-only mode
     }
 
     func realtimeClient(_ client: RealtimeAPIClient, didEncounterError error: Error) {
