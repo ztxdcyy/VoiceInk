@@ -125,7 +125,7 @@ enum ServerEventType: String {
 
 // MARK: - App Errors
 
-enum VoiceinkError: LocalizedError {
+enum SpeakinError: LocalizedError {
     case missingAPIKey
     case connectionFailed(String)
     case timeout

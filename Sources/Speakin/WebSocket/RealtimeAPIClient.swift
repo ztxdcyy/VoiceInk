@@ -327,7 +327,7 @@ class RealtimeAPIClient {
 
             case .error:
                 let message = event.error?.message ?? "Unknown API error"
-                self.delegate?.realtimeClient(self, didEncounterError: VoiceinkError.apiError(message))
+                self.delegate?.realtimeClient(self, didEncounterError: SpeakinError.apiError(message))
             }
         }
     }

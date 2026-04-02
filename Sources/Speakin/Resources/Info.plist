@@ -4,15 +4,15 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>Voiceink</string>
+    <string>Speakin</string>
     <key>CFBundleIdentifier</key>
-    <string>com.voiceink.app</string>
+    <string>com.speakin.app</string>
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
     <key>CFBundleExecutable</key>
-    <string>Voiceink</string>
+    <string>Speakin</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMinimumSystemVersion</key>
@@ -20,7 +20,7 @@
     <key>LSUIElement</key>
     <true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Voiceink needs microphone access to record your voice and convert it to text.</string>
+    <string>Speakin needs microphone access to record your voice and convert it to text.</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>

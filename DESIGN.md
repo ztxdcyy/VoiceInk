@@ -1,4 +1,4 @@
-# Voiceink — macOS Menu Bar 语音输入法
+# Speakin — macOS Menu Bar 语音输入法
 
 > 按住 Fn 说话，松开即输入。基于阿里云百炼 Qwen-Omni-Realtime 的实时语音转文字 macOS 菜单栏应用。
 
@@ -32,13 +32,13 @@
 ## 2. 项目结构
 
 ```
-Voiceink/
+Speakin/
 ├── Package.swift
 ├── Makefile
 ├── README.md
 ├── DESIGN.md
 └── Sources/
-    └── Voiceink/
+    └── Speakin/
         ├── App/
         │   ├── AppDelegate.swift          # 应用入口, NSApplication delegate
         │   ├── MenuBarManager.swift        # 菜单栏图标 & 菜单管理
@@ -116,7 +116,7 @@ app.run()
   - **Settings...**: 打开设置窗口
   - **Launch at Login**: 开关项，通过 SMAppService 控制
   - **分隔线**
-  - **Quit Voiceink**: 退出 (`⌘Q`)
+  - **Quit Speakin**: 退出 (`⌘Q`)
 
 #### PermissionManager.swift
 
@@ -411,7 +411,7 @@ class RealtimeAPIClient {
     func connect() {
         let settings = SettingsStore.shared
         guard let apiKey = settings.apiKey, !apiKey.isEmpty else {
-            delegate?.realtimeClient(self, didEncounterError: VoiceinkError.missingAPIKey)
+            delegate?.realtimeClient(self, didEncounterError: SpeakinError.missingAPIKey)
             return
         }
 
@@ -796,7 +796,7 @@ class SettingsStore {
 **窗口布局：**
 
 ```
-┌─────────────── Voiceink Settings ───────────────┐
+┌─────────────── Speakin Settings ───────────────┐
 │                                                  │
 │  DashScope API Key                               │
 │  ┌──────────────────────────────────────────┐    │
@@ -896,14 +896,14 @@ User          FnKeyMonitor    SessionCoordinator    AudioEngine     RealtimeAPI 
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>Voiceink</string>
+    <string>Speakin</string>
     <key>CFBundleIdentifier</key>
-    <string>com.voiceink.app</string>
+    <string>com.speakin.app</string>
     <key>CFBundleVersion</key>
     <string>1.0.0</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
-    <string>Voiceink</string>
+    <string>Speakin</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSMinimumSystemVersion</key>
@@ -911,7 +911,7 @@ User          FnKeyMonitor    SessionCoordinator    AudioEngine     RealtimeAPI 
     <key>LSUIElement</key>
     <true/>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Voiceink 需要使用麦克风来录制您的语音并转换为文字。</string>
+    <string>Speakin 需要使用麦克风来录制您的语音并转换为文字。</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
@@ -927,14 +927,14 @@ User          FnKeyMonitor    SessionCoordinator    AudioEngine     RealtimeAPI 
 import PackageDescription
 
 let package = Package(
-    name: "Voiceink",
+    name: "Speakin",
     platforms: [
         .macOS(.v14)
     ],
     targets: [
         .executableTarget(
-            name: "Voiceink",
-            path: "Sources/Voiceink",
+            name: "Speakin",
+            path: "Sources/Speakin",
             resources: [
                 .copy("Resources/Info.plist")
             ],
@@ -955,8 +955,8 @@ let package = Package(
 ## 6. Makefile
 
 ```makefile
-APP_NAME = Voiceink
-BUNDLE_ID = com.voiceink.app
+APP_NAME = Speakin
+BUNDLE_ID = com.speakin.app
 BUILD_DIR = .build/release
 APP_BUNDLE = $(BUILD_DIR)/$(APP_NAME).app
 
@@ -968,7 +968,7 @@ build:
 	mkdir -p "$(APP_BUNDLE)/Contents/MacOS"
 	mkdir -p "$(APP_BUNDLE)/Contents/Resources"
 	cp "$(BUILD_DIR)/$(APP_NAME)" "$(APP_BUNDLE)/Contents/MacOS/"
-	cp "Sources/Voiceink/Resources/Info.plist" "$(APP_BUNDLE)/Contents/"
+	cp "Sources/Speakin/Resources/Info.plist" "$(APP_BUNDLE)/Contents/"
 	# Ad-hoc 签名
 	codesign --force --sign - "$(APP_BUNDLE)"
 
@@ -1041,4 +1041,4 @@ clean:
 
 ---
 
-*文档版本: 1.0 | 日期: 2026-04-01 | 作者: Voiceink Team*
+*文档版本: 1.0 | 日期: 2026-04-01 | 作者: Speakin Team*

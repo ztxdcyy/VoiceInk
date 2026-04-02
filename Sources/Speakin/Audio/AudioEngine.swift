@@ -10,7 +10,7 @@ class AudioEngine {
     weak var delegate: AudioEngineDelegate?
 
     private var engine: AVAudioEngine?
-    private let processingQueue = DispatchQueue(label: "com.voiceink.audio", qos: .userInteractive)
+    private let processingQueue = DispatchQueue(label: "com.speakin.audio", qos: .userInteractive)
     private(set) var isRecording = false
 
     /// Frame counter for debugging audio data issues

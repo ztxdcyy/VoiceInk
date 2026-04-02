@@ -1,4 +1,4 @@
-# Voiceink Runtime QA Checklist
+# Speakin Runtime QA Checklist
 
 > 目标：在真实 macOS 桌面环境验证 Fn 语音输入全链路。
 
@@ -11,7 +11,7 @@
 
 ## 1. 权限与启动
 
-- [ ] 运行应用后，菜单栏出现 `Voiceink` 麦克风图标
+- [ ] 运行应用后，菜单栏出现 `Speakin` 麦克风图标
 - [ ] 首次启动可看到辅助功能权限引导
 - [ ] 在系统设置中授予 Accessibility 权限
 - [ ] 首次录音可触发麦克风权限弹窗并授权

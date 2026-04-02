@@ -63,7 +63,7 @@ class GummyASRClient {
 
         var request = URLRequest(url: url)
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-        request.setValue("voiceink-macos", forHTTPHeaderField: "user-agent")
+        request.setValue("speakin-macos", forHTTPHeaderField: "user-agent")
 
         let session = URLSession(configuration: .default)
         self.urlSession = session
@@ -241,7 +241,7 @@ class GummyASRClient {
             let message = output?["message"] as? String ?? "Unknown error"
             let code = output?["code"] as? String ?? ""
             AppLogger.shared.log("[Gummy] task failed: \(code) — \(message)")
-            delegate?.gummyClient(self, didEncounterError: VoiceinkError.apiError("\(code): \(message)"))
+            delegate?.gummyClient(self, didEncounterError: SpeakinError.apiError("\(code): \(message)"))
 
         default:
             break

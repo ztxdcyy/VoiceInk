@@ -14,7 +14,7 @@ class SettingsWindowController: NSWindowController, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "Voiceink Settings"
+        window.title = "Speakin Settings"
         window.center()
         window.isReleasedWhenClosed = false
         super.init(window: window)
@@ -110,7 +110,7 @@ class SettingsWindowController: NSWindowController, NSWindowDelegate {
 
         statusLabel.stringValue = "Settings saved."
         statusLabel.textColor = .systemGreen
-        NotificationCenter.default.post(name: .voiceInkSettingsSaved, object: nil)
+        NotificationCenter.default.post(name: .speakinSettingsSaved, object: nil)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
             self?.window?.close()

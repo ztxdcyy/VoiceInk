@@ -1,6 +1,6 @@
 # TODO
 
-Project-level backlog for Voiceink. Items are roughly prioritized top-to-bottom within each section.
+Project-level backlog for Speakin. Items are roughly prioritized top-to-bottom within each section.
 
 ---
 

@@ -69,7 +69,7 @@ class FnKeyMonitor {
         eventTap = nil
         runLoopSource = nil
         fnPressed = false
-        print("[VoiceInk] Fn key monitor stopped.")
+        print("[Speakin] Fn key monitor stopped.")
     }
 
     // MARK: - Event Handling

@@ -36,16 +36,16 @@ struct OptionalUserDefault<T> {
 class SettingsStore {
     static let shared = SettingsStore()
 
-    @OptionalUserDefault<String>(key: "voiceink_apiKey")
+    @OptionalUserDefault<String>(key: "speakin_apiKey")
     var apiKey: String?
 
-    @UserDefault(key: "voiceink_model", defaultValue: "qwen-omni-turbo-realtime-latest")
+    @UserDefault(key: "speakin_model", defaultValue: "qwen-omni-turbo-realtime-latest")
     var model: String
 
-    @UserDefault(key: "voiceink_language", defaultValue: "zh-CN")
+    @UserDefault(key: "speakin_language", defaultValue: "zh-CN")
     var language: String
 
-    @UserDefault(key: "voiceink_launchAtLogin", defaultValue: false)
+    @UserDefault(key: "speakin_launchAtLogin", defaultValue: false)
     var launchAtLogin: Bool
 
     var languageDisplayName: String {

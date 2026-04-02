@@ -17,7 +17,7 @@ class MenuBarManager {
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Voiceink")
+            button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Speakin")
             button.image?.size = NSSize(width: 18, height: 18)
         }
     }
@@ -27,7 +27,7 @@ class MenuBarManager {
             let symbolName = recording ? "mic.badge.plus" : "mic.fill"
             self?.statusItem.button?.image = NSImage(
                 systemSymbolName: symbolName,
-                accessibilityDescription: "Voiceink"
+                accessibilityDescription: "Speakin"
             )
         }
     }
@@ -78,7 +78,7 @@ class MenuBarManager {
         menu.addItem(NSMenuItem.separator())
 
         // Quit
-        let quitItem = NSMenuItem(title: "Quit Voiceink", action: #selector(quitApp), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "Quit Speakin", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -117,7 +117,7 @@ class MenuBarManager {
                     try SMAppService.mainApp.unregister()
                 }
             } catch {
-                print("[Voiceink] Failed to update login item: \(error)")
+                print("[Speakin] Failed to update login item: \(error)")
             }
         }
     }

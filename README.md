@@ -1,12 +1,12 @@
-# Voiceink
+# Speakin
 
 macOS 语音输入工具 —— 按住 Fn 键说话，松开后文字自动输入到当前光标位置。
 
 ## 快速上手
 
-1. 前往 [Releases](https://github.com/ztxdcyy/Voiceink/releases) 下载最新的 `Voiceink.zip`
-2. 解压后将 `Voiceink.app` 拖入「应用程序」文件夹
-3. 终端执行 `xattr -cr /Applications/Voiceink.app`（解除 macOS 门禁限制）
+1. 前往 [Releases](https://github.com/ztxdcyy/Speakin/releases) 下载最新的 `Speakin.zip`
+2. 解压后将 `Speakin.app` 拖入「应用程序」文件夹
+3. 终端执行 `xattr -cr /Applications/Speakin.app`（解除 macOS 门禁限制）
 4. 启动应用，按提示授予**辅助功能**和**麦克风**权限
 5. 在菜单栏图标 → Settings 中配置 [DashScope API Key](https://bailian.console.aliyun.com/)
 6. 在任意输入框按住 Fn 说话，松开即输入

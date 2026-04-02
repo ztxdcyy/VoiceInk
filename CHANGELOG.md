@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Voiceink will be documented in this file.
+All notable changes to Speakin will be documented in this file.
 
 ## [v0.1.1] - 2026-04-02
 
@@ -30,7 +30,7 @@ All notable changes to Voiceink will be documented in this file.
 
 ### Added
 
-- Initial release of Voiceink — macOS menu bar app for voice-to-text via Fn key.
+- Initial release of Speakin — macOS menu bar app for voice-to-text via Fn key.
 - Fn key hold-to-record with 300 ms anti-bounce and 15 s response timeout.
 - Audio streaming via WebSocket to Alibaba DashScope Qwen-Omni-Realtime API (16 kHz PCM, Base64).
 - Floating capsule HUD with 5-bar waveform animation and live transcript display.
