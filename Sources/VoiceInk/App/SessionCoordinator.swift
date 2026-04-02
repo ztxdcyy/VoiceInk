@@ -19,6 +19,11 @@ final class SessionCoordinator: NSObject {
     private var recordingStartAt: Date?
     private var responseTimeoutTimer: Timer?
 
+    private var currentTranscript = ""
+    private var finalTranscript = ""
+    /// Accumulates live input_audio_transcription deltas during recording
+    private var liveTranscript = ""
+
     private let minimumHoldDuration: TimeInterval = 0.3
     private let responseTimeout: TimeInterval = 15
 
@@ -55,6 +60,9 @@ final class SessionCoordinator: NSObject {
         do {
             try audioEngine.startRecording()
             recordingStartAt = Date()
+            currentTranscript = ""
+            finalTranscript = ""
+            liveTranscript = ""
             state = .recording
             capsulePanel.setState(.recording)
             MenuBarManager.shared.setRecording(true)
@@ -79,6 +87,7 @@ final class SessionCoordinator: NSObject {
 
         if heldDuration < minimumHoldDuration {
             log.log("[Session] too short — cancelled")
+            apiClient.cancelResponse()
             state = .idle
             capsulePanel.setState(.hidden)
             return
@@ -87,11 +96,11 @@ final class SessionCoordinator: NSObject {
         state = .waitingForResult
         capsulePanel.setState(.waitingForResult)
 
-        // Manual mode: commit the audio buffer to trigger input_audio_transcription.
-        // No response.create needed — we only want the transcription, not a model reply.
+        // Manual mode: commit audio buffer — server will fire inputAudioTranscriptionCompleted
+        // which acts as both the final transcript and the "response done" signal.
         apiClient.commitAudioBuffer()
         startResponseTimeoutTimer()
-        log.log("[Session] commit sent, waiting for transcription")
+        log.log("[Session] audio committed, waiting for transcription result")
     }
 
     private func resetToIdle() {
@@ -204,40 +213,47 @@ extension SessionCoordinator: RealtimeAPIClientDelegate {
         beginRecordingIfPossible()
     }
 
-    func realtimeClient(_ client: RealtimeAPIClient, didReceiveTranscriptDelta delta: String) {
-        // Not used in transcription-only mode
+    func realtimeClient(_ client: RealtimeAPIClient, didReceiveLiveTranscriptDelta delta: String) {
+        // Show live transcription during recording AND while waiting for final result
+        guard state == .recording || state == .waitingForResult else { return }
+        liveTranscript += delta
+        capsulePanel.updateTranscript(liveTranscript)
     }
 
     func realtimeClient(_ client: RealtimeAPIClient, didCompleteTranscript text: String) {
-        log.log("[Session] transcription completed: \(text.prefix(80))")
-
-        guard state == .waitingForResult else {
-            log.log("[Session] ignoring transcription — state=\(state.rawValue)")
-            return
+        log.log("[Session] transcript done: \(text.prefix(80))")
+        finalTranscript = text
+        if !text.isEmpty {
+            capsulePanel.updateTranscript(text)
         }
+    }
+
+    func realtimeClientDidFinishResponse(_ client: RealtimeAPIClient) {
+        log.log("[Session] response done, state=\(state.rawValue)")
+
+        guard state == .waitingForResult else { return }
 
         responseTimeoutTimer?.invalidate()
         responseTimeoutTimer = nil
 
-        let result = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Prefer finalTranscript (from completed event), fall back to accumulated live deltas
+        let completedText = finalTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+        let liveText = liveTranscript.trimmingCharacters(in: .whitespacesAndNewlines)
+        let result = !completedText.isEmpty ? completedText : liveText
+
+        log.log("[Session] final text (\(result.count) chars): \(result.prefix(100))")
 
         if result.isEmpty {
-            log.log("[Session] empty transcription — skip inject")
+            log.log("[Session] empty transcript — skip inject")
             capsulePanel.setState(.hidden)
             resetToIdle()
             return
         }
 
-        log.log("[Session] injecting (\(result.count) chars): \(result.prefix(100))")
         state = .injecting
-        capsulePanel.updateTranscript(result)
         TextInjector.inject(text: result)
         capsulePanel.setState(.hidden)
         resetToIdle()
-    }
-
-    func realtimeClientDidFinishResponse(_ client: RealtimeAPIClient) {
-        // Not used in transcription-only mode
     }
 
     func realtimeClient(_ client: RealtimeAPIClient, didEncounterError error: Error) {

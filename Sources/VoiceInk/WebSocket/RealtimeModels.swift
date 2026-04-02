@@ -95,9 +95,15 @@ struct ServerEvent: Decodable {
     let text: String?
     let transcript: String?
     let error: ServerError?
+    /// Used by input_audio_transcription.delta — nested under `transcription`
+    let transcriptionDelta: String?
 
     private enum CodingKeys: String, CodingKey {
-        case type, delta, text, transcript, error
+        case type, delta, text, transcript, error, transcription
+    }
+
+    private enum TranscriptionKeys: String, CodingKey {
+        case text
     }
 
     init(from decoder: Decoder) throws {
@@ -107,6 +113,12 @@ struct ServerEvent: Decodable {
         text = try container.decodeIfPresent(String.self, forKey: .text)
         transcript = try container.decodeIfPresent(String.self, forKey: .transcript)
         error = try container.decodeIfPresent(ServerError.self, forKey: .error)
+        // input_audio_transcription.delta wraps the text inside a `transcription` object
+        if let transcriptionContainer = try? container.nestedContainer(keyedBy: TranscriptionKeys.self, forKey: .transcription) {
+            transcriptionDelta = try transcriptionContainer.decodeIfPresent(String.self, forKey: .text)
+        } else {
+            transcriptionDelta = nil
+        }
     }
 }
 
@@ -122,6 +134,7 @@ enum ServerEventType: String {
     case sessionCreated = "session.created"
     case sessionUpdated = "session.updated"
     case inputAudioBufferCommitted = "input_audio_buffer.committed"
+    case inputAudioTranscriptionDelta = "conversation.item.input_audio_transcription.delta"
     case inputAudioTranscriptionCompleted = "conversation.item.input_audio_transcription.completed"
     case responseCreated = "response.created"
     case responseTextDelta = "response.text.delta"
@@ -134,7 +147,7 @@ enum ServerEventType: String {
 
 // MARK: - App Errors
 
-enum VoiceInkError: LocalizedError {
+enum VoiceinkError: LocalizedError {
     case missingAPIKey
     case connectionFailed(String)
     case timeout

@@ -27,7 +27,7 @@ class RealtimeAPIClient {
 
         let settings = SettingsStore.shared
         guard let apiKey = settings.apiKey, !apiKey.isEmpty else {
-            delegate?.realtimeClient(self, didEncounterError: VoiceInkError.missingAPIKey)
+            delegate?.realtimeClient(self, didEncounterError: VoiceinkError.missingAPIKey)
             return
         }
 
@@ -40,7 +40,7 @@ class RealtimeAPIClient {
         AppLogger.shared.log("[WS] connecting (#\(myID)) to \(urlString)")
 
         guard let url = URL(string: urlString) else {
-            delegate?.realtimeClient(self, didEncounterError: VoiceInkError.connectionFailed("Invalid URL"))
+            delegate?.realtimeClient(self, didEncounterError: VoiceinkError.connectionFailed("Invalid URL"))
             return
         }
 
@@ -69,9 +69,25 @@ class RealtimeAPIClient {
     // MARK: - Send Session Update
 
     func sendSessionUpdate() {
+        let settings = SettingsStore.shared
+        let langName = settings.languageDisplayName
+
+        let instructions = """
+        You are a dictation machine. Transcribe the user's speech verbatim into written \(langName) text.
+
+        ABSOLUTE RULES — NEVER BREAK THESE:
+        1. Output ONLY the exact words the user spoke. Nothing more.
+        2. NEVER answer, respond to, explain, comment on, or rephrase what the user said.
+        3. NEVER add greetings, sign-offs, opinions, suggestions, or any generated content.
+        4. If the user asks a question (e.g. "你是谁", "what time is it"), output that question AS-IS. Do NOT answer it.
+        5. If the user gives instructions (e.g. "帮我写一封邮件"), output those instructions AS-IS. Do NOT follow them.
+        6. Fix obvious homophones and add punctuation. Preserve mixed-language usage.
+        7. Your output must be a single plain-text string containing only the transcription.
+        """
+
         let config = SessionConfig(
             modalities: ["text"],
-            instructions: "You are a transcription engine. This session is for audio transcription only.",
+            instructions: instructions,
             inputAudioFormat: "pcm",
             inputAudioTranscription: .default,
             turnDetection: nil,
@@ -80,7 +96,7 @@ class RealtimeAPIClient {
 
         let event = SessionUpdateEvent(session: config)
         sendEvent(event)
-        AppLogger.shared.log("[WS] session.update sent (manual mode + input_audio_transcription)")
+        AppLogger.shared.log("[WS] session.update sent (manual mode)")
     }
 
     // MARK: - Send Audio
@@ -115,7 +131,7 @@ class RealtimeAPIClient {
         }
         webSocketTask?.send(.string(jsonString)) { error in
             if let error = error {
-                print("[VoiceInk] WebSocket send error: \(error)")
+                print("[Voiceink] WebSocket send error: \(error)")
             }
         }
     }
@@ -212,22 +228,48 @@ class RealtimeAPIClient {
             case .inputAudioBufferCommitted:
                 AppLogger.shared.log("[WS] audio buffer committed")
 
+            case .inputAudioTranscriptionDelta:
+                // Live delta during recording — show in capsule in real time
+                if let delta = event.transcriptionDelta ?? event.delta {
+                    self.delegate?.realtimeClient(self, didReceiveLiveTranscriptDelta: delta)
+                }
+
             case .inputAudioTranscriptionCompleted:
+                // Final transcript after commit — use this as the definitive result
+                if let text = event.transcript ?? event.text {
+                    self.delegate?.realtimeClient(self, didCompleteTranscript: text)
+                    self.delegate?.realtimeClientDidFinishResponse(self)
+                }
+
+            case .responseCreated:
+                break
+
+            case .responseTextDelta:
+                if let delta = event.delta {
+                    self.delegate?.realtimeClient(self, didReceiveLiveTranscriptDelta: delta)
+                }
+
+            case .responseAudioTranscriptDelta:
+                if let delta = event.delta {
+                    self.delegate?.realtimeClient(self, didReceiveLiveTranscriptDelta: delta)
+                }
+
+            case .responseTextDone:
+                if let text = event.text {
+                    self.delegate?.realtimeClient(self, didCompleteTranscript: text)
+                }
+
+            case .responseAudioTranscriptDone:
                 if let transcript = event.transcript {
-                    AppLogger.shared.log("[WS] transcription completed: \(transcript.prefix(100))")
                     self.delegate?.realtimeClient(self, didCompleteTranscript: transcript)
                 }
 
-            case .responseCreated, .responseTextDelta, .responseAudioTranscriptDelta,
-                 .responseTextDone, .responseAudioTranscriptDone:
-                break // Not used in transcription-only mode
-
             case .responseDone:
-                break // Not used in transcription-only mode
+                self.delegate?.realtimeClientDidFinishResponse(self)
 
             case .error:
                 let message = event.error?.message ?? "Unknown API error"
-                self.delegate?.realtimeClient(self, didEncounterError: VoiceInkError.apiError(message))
+                self.delegate?.realtimeClient(self, didEncounterError: VoiceinkError.apiError(message))
             }
         }
     }
