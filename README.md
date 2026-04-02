@@ -2,11 +2,21 @@
 
 macOS 语音输入工具 —— 按住 Fn 键说话，松开后文字自动输入到当前光标位置。
 
+## 快速上手
+
+1. 前往 [Releases](https://github.com/ztxdcyy/Voiceink/releases) 下载最新的 `Voiceink.zip`
+2. 解压后将 `Voiceink.app` 拖入「应用程序」文件夹
+3. 终端执行 `xattr -cr /Applications/Voiceink.app`（解除 macOS 门禁限制）
+4. 启动应用，按提示授予**辅助功能**和**麦克风**权限
+5. 在菜单栏图标 → Settings 中配置 [DashScope API Key](https://bailian.console.aliyun.com/)
+6. 在任意输入框按住 Fn 说话，松开即输入
+
 ## 特性
 
 - **按住即说**：按住 Fn 键开始录音，松开自动转写并输入
-- **实时转写**：基于阿里云 DashScope Qwen-Omni-Realtime 模型
-- **光标跟随**：浮动胶囊 UI 自动定位到当前输入位置
+- **Paraformer-v2**：基于阿里云 DashScope Paraformer 实时语音识别，专为中文短语音优化
+- **自动标点 & 语气词过滤**：输出自带标点，自动去除"嗯、啊"等口语
+- **光标跟随**：胶囊 UI 自动定位到当前输入位置
 - **多语言**：支持简体中文、繁體中文、English、日本語、한국어
 - **CJK 智能切换**：自动处理中日韩输入法与粘贴的兼容问题
 - **剪贴板无损**：注入文字后自动恢复原有剪贴板内容
@@ -43,7 +53,7 @@ make clean
 - Swift 5.9 / Swift Package Manager
 - AppKit（纯原生，无 SwiftUI 依赖）
 - WebSocket（URLSessionWebSocketTask）
-- AVAudioEngine（音频采集与格式转换）
+- AVAudioEngine + 手动降采样（音频采集，48kHz→16kHz）
 - CGEvent（Fn 键监听与键盘模拟）
 - Accessibility API（光标位置获取）
 
