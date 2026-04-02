@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "VoiceInk",
+    name: "Voiceink",
     platforms: [
         .macOS(.v14)
     ],
     targets: [
         .executableTarget(
-            name: "VoiceInk",
-            path: "Sources/VoiceInk",
+            name: "Voiceink",
+            path: "Sources/Voiceink",
             exclude: [
                 "Resources/Info.plist"
             ],

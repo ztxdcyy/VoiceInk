@@ -60,7 +60,7 @@ class FnKeyMonitor {
         eventTap = nil
         runLoopSource = nil
         fnPressed = false
-        print("[VoiceInk] Fn key monitor stopped.")
+        print("[Voiceink] Fn key monitor stopped.")
     }
 
     // MARK: - Event Handling
@@ -93,7 +93,7 @@ class FnKeyMonitor {
         if let tap = eventTap {
             if !CGEvent.tapIsEnabled(tap: tap) {
                 CGEvent.tapEnable(tap: tap, enable: true)
-                print("[VoiceInk] Re-enabled CGEvent tap.")
+                print("[Voiceink] Re-enabled CGEvent tap.")
             }
         }
     }

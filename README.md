@@ -1,4 +1,4 @@
-# VoiceInk
+# Voiceink
 
 macOS 语音输入工具 —— 按住 Fn 键说话，松开后文字自动输入到当前光标位置。
 

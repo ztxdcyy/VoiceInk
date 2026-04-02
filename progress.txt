@@ -1,4 +1,4 @@
-# VoiceInk Progress Log
+# Voiceink Progress Log
 
 ## Session 1 — 2026-04-01 15:00
 
@@ -108,8 +108,8 @@
 
 ### Completed
 - [x] Added permission debug logger (`PermissionDebugLogger`)
-  - console output prefix: `[VoiceInk][Permission]`
-  - file output: `~/Library/Logs/VoiceInk/permission.log`
+  - console output prefix: `[Voiceink][Permission]`
+  - file output: `~/Library/Logs/Voiceink/permission.log`
 - [x] Added detailed diagnostics in permission recheck flow:
   - trustedWithOptions / trustedRaw
   - bundle id / executable path

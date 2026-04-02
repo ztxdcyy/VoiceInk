@@ -14,7 +14,7 @@ class SettingsWindowController: NSWindowController, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        window.title = "VoiceInk Settings"
+        window.title = "Voiceink Settings"
         window.center()
         window.isReleasedWhenClosed = false
         super.init(window: window)

@@ -33,7 +33,7 @@ final class PermissionGuideWindowController: NSWindowController {
             backing: .buffered,
             defer: false
         )
-        window.title = "VoiceInk 引导"
+        window.title = "Voiceink 引导"
         window.center()
         window.isReleasedWhenClosed = false
         window.level = .floating
@@ -119,12 +119,12 @@ final class PermissionGuideWindowController: NSWindowController {
             iconView.image = Self.emojiImage("🔐", size: 32)
             titleLabel.stringValue = "第一步：开启辅助功能权限"
             descriptionLabel.stringValue = """
-为了监听 Fn 键并将语音文字粘贴到当前输入框，VoiceInk 需要"辅助功能"权限。
+为了监听 Fn 键并将语音文字粘贴到当前输入框，Voiceink 需要"辅助功能"权限。
 
 操作步骤：
 1) 点击下方"打开系统设置"
-2) 在"隐私与安全性 → 辅助功能"列表中找到 VoiceInk
-3) 如果 VoiceInk 已存在但检测失败：先点"-"移除，再点"+"重新添加并开启
+2) 在"隐私与安全性 → 辅助功能"列表中找到 Voiceink
+3) 如果 Voiceink 已存在但检测失败：先点"-"移除，再点"+"重新添加并开启
 4) 返回本窗口，点击"我已完成授权，重新检查"
 """
             setStatusBanner(icon: "⏳", text: "等待授权...", color: NSColor.systemGray.withAlphaComponent(0.15), textColor: .secondaryLabelColor)
@@ -171,18 +171,18 @@ final class PermissionGuideWindowController: NSWindowController {
             iconView.image = Self.emojiImage("🎉", size: 32)
             titleLabel.stringValue = "设置全部完成！"
             descriptionLabel.stringValue = """
-VoiceInk 已准备就绪。
+Voiceink 已准备就绪。
 
 使用方法：按住 Fn 键说话，松开后文字将自动输入到当前光标位置。
 
 你可以随时通过菜单栏图标调整语言和设置。祝你使用愉快！
 """
-            setStatusBanner(icon: "🎉", text: "所有配置已完成，VoiceInk 已就绪！", color: NSColor.systemGreen.withAlphaComponent(0.15), textColor: .systemGreen)
+            setStatusBanner(icon: "🎉", text: "所有配置已完成，Voiceink 已就绪！", color: NSColor.systemGreen.withAlphaComponent(0.15), textColor: .systemGreen)
 
             systemSettingsButton?.isHidden = true
             apiSettingsButton?.isHidden = true
             primaryButton?.isHidden = false
-            primaryButton?.title = "开始使用 VoiceInk"
+            primaryButton?.title = "开始使用 Voiceink"
             primaryButton?.isEnabled = true
         }
     }
@@ -205,7 +205,7 @@ VoiceInk 已准备就绪。
     func setRecheckFailedHint(_ message: String? = nil) {
         setStatusBanner(
             icon: "⚠️",
-            text: message ?? "仍未授权，请确认 VoiceInk 开关已打开。",
+            text: message ?? "仍未授权，请确认 Voiceink 开关已打开。",
             color: NSColor.systemOrange.withAlphaComponent(0.12),
             textColor: .systemOrange
         )

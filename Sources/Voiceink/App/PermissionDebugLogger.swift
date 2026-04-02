@@ -1,22 +1,22 @@
 import Foundation
 
-final class AppLogger {
-    static let shared = AppLogger()
+final class PermissionDebugLogger {
+    static let shared = PermissionDebugLogger()
 
-    private let queue = DispatchQueue(label: "com.voiceink.logger")
+    private let queue = DispatchQueue(label: "com.voiceink.permission.logger")
     private let logFileURL: URL
 
     private init() {
         let logsDir = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Logs/VoiceInk", isDirectory: true)
+            .appendingPathComponent("Library/Logs/Voiceink", isDirectory: true)
         try? FileManager.default.createDirectory(at: logsDir, withIntermediateDirectories: true)
-        logFileURL = logsDir.appendingPathComponent("app.log")
+        logFileURL = logsDir.appendingPathComponent("permission.log")
     }
 
     func log(_ message: String) {
         let ts = ISO8601DateFormatter().string(from: Date())
         let line = "[\(ts)] \(message)"
-        print("[VoiceInk] \(message)")
+        print("[Voiceink][Permission] \(line)")
 
         queue.async { [logFileURL] in
             guard let data = (line + "\n").data(using: .utf8) else { return }

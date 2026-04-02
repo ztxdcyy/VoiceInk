@@ -11,7 +11,7 @@
 
 ## 2. 边界（本轮仅做）
 
-- 新增：`Sources/VoiceInk/App/SessionCoordinator.swift`
+- 新增：`Sources/Voiceink/App/SessionCoordinator.swift`
 - 小幅改动（仅必要）：
   - `RealtimeProtocol.swift`：补一个 `response.done` 回调
   - `RealtimeAPIClient.swift`：在收到 `response.done` 时触发回调

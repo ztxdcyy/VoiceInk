@@ -136,7 +136,7 @@ class PermissionManager {
             stopAccessibilityPolling()
         } else {
             guideWindowController?.setRecheckFailedHint(
-                "仍未检测到权限。请在系统设置中先移除 VoiceInk，再重新添加并开启。"
+                "仍未检测到权限。请在系统设置中先移除 Voiceink，再重新添加并开启。"
             )
         }
     }
@@ -193,7 +193,7 @@ class PermissionManager {
 // MARK: - Notification Names
 
 extension Notification.Name {
-    static let accessibilityPermissionGranted = Notification.Name("VoiceInk.accessibilityPermissionGranted")
-    static let microphonePermissionGranted = Notification.Name("VoiceInk.microphonePermissionGranted")
-    static let voiceInkSettingsSaved = Notification.Name("VoiceInk.settingsSaved")
+    static let accessibilityPermissionGranted = Notification.Name("Voiceink.accessibilityPermissionGranted")
+    static let microphonePermissionGranted = Notification.Name("Voiceink.microphonePermissionGranted")
+    static let voiceInkSettingsSaved = Notification.Name("Voiceink.settingsSaved")
 }
