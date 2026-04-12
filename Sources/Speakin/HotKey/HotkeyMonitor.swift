@@ -160,10 +160,11 @@ class HotkeyMonitor {
         if isFn && !hotkeyPressed {
             hotkeyPressed = true
             AppLogger.shared.log("[Hotkey] Fn DOWN")
-            let mouseRect = Self.mousePositionRect()
+            // mousePositionRect() calls NSEvent.mouseLocation which requires main thread
+            // in macOS 26+. Move entirely into main.async to keep callback fast.
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.lastCaretRect = Self.captureCaretRect() ?? mouseRect
+                self.lastCaretRect = Self.captureCaretRect() ?? Self.mousePositionRect()
                 self.delegate?.hotkeyDidPress()
             }
             // Suppress pure-Fn presses (prevents emoji picker).
@@ -195,10 +196,11 @@ class HotkeyMonitor {
         if flagsMatch && keyCodeMatches && !hotkeyPressed {
             hotkeyPressed = true
             AppLogger.shared.log("[Hotkey] custom modifier DOWN (\(hotkey.displayName))")
-            let mouseRect = Self.mousePositionRect()
+            // mousePositionRect() calls NSEvent.mouseLocation which requires main thread
+            // in macOS 26+. Move entirely into main.async to keep callback fast.
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.lastCaretRect = Self.captureCaretRect() ?? mouseRect
+                self.lastCaretRect = Self.captureCaretRect() ?? Self.mousePositionRect()
                 self.delegate?.hotkeyDidPress()
             }
         } else if !flagsMatch && hotkeyPressed && keyCodeMatches {
@@ -228,10 +230,9 @@ class HotkeyMonitor {
         if !hotkeyPressed {
             hotkeyPressed = true
             AppLogger.shared.log("[Hotkey] keyDown hotkey pressed (\(hotkey.displayName))")
-            let mouseRect = Self.mousePositionRect()
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                self.lastCaretRect = Self.captureCaretRect() ?? mouseRect
+                self.lastCaretRect = Self.captureCaretRect() ?? Self.mousePositionRect()
                 self.delegate?.hotkeyDidPress()
             }
         }
