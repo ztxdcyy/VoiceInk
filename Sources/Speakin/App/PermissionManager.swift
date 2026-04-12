@@ -196,4 +196,5 @@ extension Notification.Name {
     static let accessibilityPermissionGranted = Notification.Name("Speakin.accessibilityPermissionGranted")
     static let microphonePermissionGranted = Notification.Name("Speakin.microphonePermissionGranted")
     static let speakinSettingsSaved = Notification.Name("Speakin.settingsSaved")
+    static let speakinHotkeyChanged = Notification.Name("Speakin.hotkeyChanged")
 }

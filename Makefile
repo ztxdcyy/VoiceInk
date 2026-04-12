@@ -2,7 +2,7 @@ APP_NAME = Speakin
 BUNDLE_ID = com.speakin.app
 BUILD_DIR = .build/release
 APP_BUNDLE = $(BUILD_DIR)/$(APP_NAME).app
-SIGNING_IDENTITY = VoiceInk Dev
+SIGNING_IDENTITY = Speakin Dev
 
 .PHONY: build run install release qa clean reset-permissions setup-cert
 

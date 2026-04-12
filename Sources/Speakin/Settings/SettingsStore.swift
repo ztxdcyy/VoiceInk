@@ -86,6 +86,22 @@ class SettingsStore {
         }
     }
 
+    /// Custom trigger hotkey stored as JSON Data in UserDefaults.
+    /// nil means "use the default Fn key".
+    var customHotkey: UserHotkeyConfig? {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: "speakin_customHotkey") else { return nil }
+            return try? JSONDecoder().decode(UserHotkeyConfig.self, from: data)
+        }
+        set {
+            if let config = newValue, let data = try? JSONEncoder().encode(config) {
+                UserDefaults.standard.set(data, forKey: "speakin_customHotkey")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "speakin_customHotkey")
+            }
+        }
+    }
+
     private init() {
         // Migrate legacy zh-TW setting to zh-CN
         if language == "zh-TW" {

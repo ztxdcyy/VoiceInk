@@ -13,7 +13,7 @@ final class SessionCoordinator: NSObject {
     private let capsulePanel = CapsulePanel()
 
     private var state: SessionState = .idle
-    private var isFnHolding = false
+    private var isHotkeyHeld = false
     private var pendingStartAfterConnect = false
 
     private var recordingStartAt: Date?
@@ -37,8 +37,8 @@ final class SessionCoordinator: NSObject {
     // MARK: - Recording lifecycle
 
     private func beginRecordingIfPossible() {
-        guard isFnHolding else {
-            log.log("[Session] beginRecording skipped — Fn not held")
+        guard isHotkeyHeld else {
+            log.log("[Session] beginRecording skipped — hotkey not held")
             return
         }
 
@@ -66,7 +66,7 @@ final class SessionCoordinator: NSObject {
 
         let heldDuration = Date().timeIntervalSince(recordingStartAt ?? Date())
         recordingStartAt = nil
-        log.log("[Session] Fn held for \(String(format: "%.2f", heldDuration))s")
+        log.log("[Session] hotkey held for \(String(format: "%.2f", heldDuration))s")
 
         if heldDuration < minimumHoldDuration {
             log.log("[Session] too short — cancelled")
@@ -93,7 +93,7 @@ final class SessionCoordinator: NSObject {
         MenuBarManager.shared.setRecording(false)
 
         state = .idle
-        isFnHolding = false
+        isHotkeyHeld = false
         pendingStartAfterConnect = false
     }
 
@@ -111,14 +111,14 @@ final class SessionCoordinator: NSObject {
     }
 }
 
-// MARK: - FnKeyMonitorDelegate
+// MARK: - HotkeyMonitorDelegate
 
-extension SessionCoordinator: FnKeyMonitorDelegate {
-    func fnKeyDidPress() {
-        log.log("[Session] fnKeyDidPress, state=\(state.rawValue)")
+extension SessionCoordinator: HotkeyMonitorDelegate {
+    func hotkeyDidPress() {
+        log.log("[Session] hotkeyDidPress, state=\(state.rawValue)")
 
         guard state == .idle else {
-            log.log("[Session] fnKeyDidPress ignored — state=\(state.rawValue)")
+            log.log("[Session] hotkeyDidPress ignored — state=\(state.rawValue)")
             return
         }
 
@@ -129,21 +129,21 @@ extension SessionCoordinator: FnKeyMonitorDelegate {
             return
         }
 
-        isFnHolding = true
+        isHotkeyHeld = true
 
         // Cache caret position (captured in CGEvent callback while frontmost app has focus)
-        capsulePanel.cacheCaretPosition(FnKeyMonitor.shared.lastCaretRect)
+        capsulePanel.cacheCaretPosition(HotkeyMonitor.shared.lastCaretRect)
 
-        log.log("[Session] Fn pressed — connecting ASR")
+        log.log("[Session] hotkey pressed — connecting ASR")
         capsulePanel.setState(.waitingForResult)
         state = .connecting
         pendingStartAfterConnect = true
         asrClient.connect()
     }
 
-    func fnKeyDidRelease() {
-        log.log("[Session] fnKeyDidRelease, state=\(state.rawValue)")
-        isFnHolding = false
+    func hotkeyDidRelease() {
+        log.log("[Session] hotkeyDidRelease, state=\(state.rawValue)")
+        isHotkeyHeld = false
 
         switch state {
         case .connecting:

@@ -21,27 +21,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 3. Setup session coordinator
         sessionCoordinator = SessionCoordinator()
-        FnKeyMonitor.shared.delegate = sessionCoordinator
+        HotkeyMonitor.shared.delegate = sessionCoordinator
 
         // 4. Check permissions — this may show guide window
         PermissionManager.shared.checkAndRequestPermissions()
 
-        // 5. Try to start Fn monitor now (may fail if not yet authorized)
-        FnKeyMonitor.shared.start()
+        // 5. Try to start hotkey monitor now (may fail if not yet authorized)
+        HotkeyMonitor.shared.start(with: SettingsStore.shared.customHotkey)
 
-        // 6. Also listen for permission granted later (after user completes guide)
+        // 6. Listen for permission granted later (after user completes guide)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(onAccessibilityGranted),
             name: .accessibilityPermissionGranted,
             object: nil
         )
+
+        // 7. Listen for hotkey changes from Settings
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onHotkeyChanged),
+            name: .speakinHotkeyChanged,
+            object: nil
+        )
     }
 
     @objc private func onAccessibilityGranted() {
-        AppLogger.shared.log("[AppDelegate] accessibilityPermissionGranted — (re)starting FnKeyMonitor")
-        FnKeyMonitor.shared.stop()
-        FnKeyMonitor.shared.start()
+        AppLogger.shared.log("[AppDelegate] accessibilityPermissionGranted — (re)starting HotkeyMonitor")
+        HotkeyMonitor.shared.stop()
+        HotkeyMonitor.shared.start(with: SettingsStore.shared.customHotkey)
+    }
+
+    @objc private func onHotkeyChanged() {
+        let newHotkey = SettingsStore.shared.customHotkey
+        AppLogger.shared.log("[AppDelegate] hotkey changed → \(newHotkey?.displayName ?? "Fn (default)")")
+        HotkeyMonitor.shared.updateHotkey(newHotkey)
     }
 
     /// Register a SIGTERM handler that disables and removes the CGEvent tap
@@ -51,7 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let sigTermSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .main)
         sigTermSource.setEventHandler {
             AppLogger.shared.log("[AppDelegate] SIGTERM received — cleaning up tap")
-            FnKeyMonitor.shared.stop()
+            HotkeyMonitor.shared.stop()
             // Give a tiny moment for tap removal to take effect, then exit
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 exit(0)
@@ -85,6 +99,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        FnKeyMonitor.shared.stop()
+        HotkeyMonitor.shared.stop()
     }
 }
